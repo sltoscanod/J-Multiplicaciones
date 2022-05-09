@@ -1,6 +1,6 @@
 import random
 import os
-
+#adadada
 cono1=0
 cono2=0
 cono3=0
