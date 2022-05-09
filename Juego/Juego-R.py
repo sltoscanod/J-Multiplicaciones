@@ -1,410 +1,198 @@
-import random
 import os
+import random
 
-cono1=0
-cono2=0
-cono3=0
-cono4=0
-cono5=0
-cono6=0
-cono7=0
-cono8=0
-cono9=0
-cono10=0
+total_regular_correct = 0
+total_regular_incorrect = 0
+total_random_correct = 0
+total_random_incorrect = 0
 
-scoreMRAcertado = 0
-scoreMRFallado = 0
+knowledge = {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+}
 
-scoreMOAcertado = 0
-scoreMOFallado = 0
+def main_menu():
 
-
-def menu():
     os.system("CLS")
-    print("---------\t Multiplicaiones \t---------")
-    print("1.- Multiplicar en orden.\t\t\t|")
-    print("2.- Multiplicar con numeros aleatorios.\t\t|")
-    print("\t\t\t\t\t\t|")
-    print("3.- Score.\t\t\t\t\t|")
-    print("4.- Exit.\t\t\t\t\t|")
-    print("-------------------------------------------------\n")
 
-    while True:
+    option = None
+    while option != 4 or option is None:
+        print("******************************** CALCULADORA ********************************")
+        print("1.- Multiplicar en orden")
+        print("2.- Multiplicar con numeros aleatorios")
+        print("3.- Score")
+        print("4.- Exit")
+
+
         try:
-            op = int(input("Elija una de las opciones:1-4\n"))
-            break
+            option = int(input("Introduce opcion: "))
         except ValueError:
-            print("Solo se admiten numeros del 1 al 4...\n")
-            print("Pulsa Enter para volver...")
-            input()
-            menu()  
+            option = None
 
-    if op <= 0 or op >= 5:
-        print("Introduzca una opción valida!!!!!!\n")
-        print("Pulsa Enter para volver...")
-        input()
-        menu()
-
-    if op == 1:
-        multO()
-    elif op == 2:
-        aleatorias()
-    elif op == 3:
-        score()
-    elif op == 4:
-        print("Hasta la proxima.")
-        input()
-        os.system("CLS")
-        exit()
-    
-def multO():
-    
-    os.system("CLS")
-    global scoreMOAcertado
-    global scoreMOFallado
-    
-    contA = 0
-    contF = 0
-    
-    br = 1
-
-    print("Qué tabla/s de multiplicar quieres repasar?\n(Sí quieres añadir más tablas, solo escribe un espacio y acontinuación el la tabla que quieres añadir...)\n")
-    
-    while True:
-        try:
-            info = input("Tu tabla/s seleccionada/s --> ")
-            break           
-        except ValueError:
+        if option > 4 or option < 0:
             os.system("CLS")
-            print("Qué tabla/s de multiplicar quieres repasar?\n(Sí quieres añadir más tablas, solo escribe un espacio y acontinuación el la tabla que quieres añadir...)\n")
+            print("Opcion no valida")
 
-    while True:
-        try:
-            tab = list(map(int,info.split(" ")))
-            break           
-        except BaseException:
-            multO()
-    
-    cont = len(tab)        
-    pos = 0
-    os.system("CLS")    
-    
-    while (pos < cont):
-        while (br < 11):
+        if option == 1:
+            regular_multiplication()
+        elif option == 2:
+            random_multiplication()
+        elif option == 3:
+            score()
+        elif option == 4:
+            print("ADIOS")
 
-            num2 = br
-            num1 = tab[pos]
-            compr = num1 * num2
-            
-            while True:
-                try:
-                    res = int(input(f'{num1} x {num2} ? '))
-                    break
-                except ValueError:
-                    print("Solo se admiten numeros...\n")
-                    print("Pulsa Enter para volver...")
-                    input()
-                    os.system("CLS")
-            
-            knowledge(res,compr,num1)
-            
-            if res == compr:
-                print("Correcto!!!")
-                contA = 1 + contA
+def regular_multiplication():
+
+    os.system("CLS")
+
+    corrects = 0
+    mistakes = 0
+
+    tables = get_tables()
+    for table in tables:
+        for i in range(1, 11):
+            correct_result = int(table) * i
+            result = get_result(table, i)
+            if check_result(correct_result, result, table):
+                corrects += 1
             else:
-                print(f'Incorrecto!!! --> El resultado es: {compr}')
-                contF = 1 + contF
-            
-            br = 1 + br
+                mistakes += 1
 
-        br = 0
-        
-        pos = 1 + pos
-        
-        if (pos < cont):
-            os.system("CLS")
-            print("-----------------\tSIGUIENTE TABLA DE MULTIPLICAR\t-----------------\n")
+    global total_regular_correct
+    global total_regular_incorrect
 
-    print("Juego terminado!!!\n")
-    
-    print("******** Resultado Final ********")
-    print(f'Aciertos --> {contA}\t\t\t|')
-    print(f'Fallos --> {contF}\t\t\t|')
-    print("*********************************")
-    
-    input()
-    
+    total_regular_correct += corrects
+    total_regular_incorrect += mistakes
+
+    print_results(corrects, mistakes)
+
+def random_multiplication():
+
     os.system("CLS")
-    
-    menu()    
-          
-def score():
-    os.system("CLS")
-    print("-------------------PUNTUACIÓN-----------------------")
-    print(f'Multiplicaciones aleatorias acertadas: {scoreMRAcertado}' )
-    print(f'Multiplicaciones en orden acertadas: {scoreMOAcertado}\n' )
-  
-    print("------------------RESULTADOS TOTALES--------------------")
-    totalA = scoreMRAcertado + scoreMOAcertado
-    totalF = scoreMRFallado + scoreMOFallado
-    print(f"Número total de aciertos: {totalA}" )
-    print(f"Número total de fallos: {totalF}\n" )
-    
-    print("------------------CONOCIMIENTO TOTAL--------------------")
-    print("Conocimiento por tablas:")
-    print(f'\t La tabla del 1 --> {cono1} de 100')
-    print(f'\t La tabla del 2 --> {cono2} de 100')
-    print(f'\t La tabla del 3 --> {cono3} de 100')
-    print(f'\t La tabla del 4 --> {cono4} de 100')
-    print(f'\t La tabla del 5 --> {cono5} de 100')
-    print(f'\t La tabla del 6 --> {cono6} de 100')
-    print(f'\t La tabla del 7 --> {cono7} de 100')
-    print(f'\t La tabla del 8 --> {cono8} de 100')
-    print(f'\t La tabla del 9 --> {cono9} de 100')
-    print(f'\t La tabla del 10 --> {cono10} de 100')
-    
 
-    print("\nPulse Enter para volver...")
-    input()
-    
-    os.system("CLS")
-    
-    menu()
+    corrects = 0
+    mistakes = 0
 
-def aleatorias():
-    
-    global scoreMRAcertado
-    global scoreMRFallado
-    
-    contA = 0
-    contF = 0
-    
-    os.system("CLS")
-    resp = str(input("¿Quieres elegir las tablas que multiplicar o no? (y/n)\n"))
-    
-    if resp == 'n' or resp == 'N':
-        os.system("CLS")
-        br = 1
-        while (br < 11):
+    print("¿Quieres elegir las tablas que multiplicar?")
+    print("1.- No")
+    print("2.- Si")
 
-            num1 = random.randint(2,10)
-            num2 = random.randint(2,10)
-            
-            compr = num1 * num2
-                
-            while True:
-                try:
-                    res = int(input(f'{num1} x {num2} ? '))
-                    break
-                except ValueError:
-                    print("\nSolo se admiten numeros...\n")
-                    print("Pulsa Enter para volver...")
-                    input()
-                    os.system("CLS")
+    random_tables = int(input("Opción: ")) - 1
+    if random_tables:
+        tables = get_tables()
+        for table in tables:
+            for i in range(1, 11):
+                random_number = random.randint(1,10)
+                correct_result = int(table) * random_number
+                result = get_result(table, random_number)
 
-            
-            knowledge(res,compr,num1)
-            
-            if res == compr:
-                print("Correcto!!!")
-                contA = 1 + contA
-            else:
-                print(f'Incorrecto!!! --> El resultado es: {compr}')
-                contF = 1 + contF
-            
-            br = 1 + br
-        
-        print("Juego terminado!!!\n")
-        
-        print("******** Resultado Final ********")
-        print(f'Aciertos --> {contA}\t\t\t|')
-        print(f'Fallos --> {contF}\t\t\t|')
-        print("*********************************")
-        scoreMRAcertado = scoreMRAcertado + contA
-        scoreMRFallado = scoreMRFallado + contF
-        
-        input()
-        
-        os.system("CLS")
-        
-        menu()
-    elif resp == 'y' or resp == 'Y':
-        
-        br=0
-        os.system("CLS")
-        print("Qué tabla/s de multiplicar quieres repasar?\n(Sí quieres añadir más tablas, solo escribe un espacio y acontinuación la tabla que quieres añadir...)\n")
-    
-        while True:
-                try:
-                    info = input("Tu tabla/s seleccionada/s --> ")
-                    break           
-                except ValueError:
-                    os.system("CLS")
-                    print("Qué tabla/s de multiplicar quieres repasar?\n(Sí quieres añadir más tablas, solo escribe un espacio y acontinuación el la tabla que quieres añadir...)\n")
-
-        while True:
-                try:
-                    tab = list(map(int,info.split(" ")))
-                    break           
-                except BaseException:
-                    os.system("CLS")
-                    print("Qué tabla/s de multiplicar quieres repasar?\n(Sí quieres añadir más tablas, solo escribe un espacio y acontinuación el la tabla que quieres añadir...)\n")
-                    
-        
-        cont = len(tab)        
-        pos = 0
-        os.system("CLS")    
-        
-        while (pos < cont):
-            while (br < 10):
-
-                num2 = random.randint(1,10)
-                num1 = tab[pos]
-                compr = num1 * num2
-                
-                while True:
-                    try:
-                        res = int(input(f'{num1} x {num2} ? '))
-                        break
-                    except ValueError:
-                        print("\nSolo se admiten numeros...\n")
-                        print("Pulsa Enter para volver...")
-                        input()
-                        os.system("CLS")
-                
-                knowledge(res,compr,num1)
-                
-                if res == compr:
-                    print("Correcto!!!")
-                    contA = 1 + contA
+                if check_result(correct_result, result, table):
+                    corrects += 1
                 else:
-                    print(f'Incorrecto!!! --> El resultado es: {compr}')
-                    contF = 1 + contF
-                
-                br = 1 + br
-                if (br == 10):
-                    os.system("CLS")
-                    print("-----------------\tSIGUIENTE TABLA DE MULTIPLICAR\t-----------------\n")
-
-            br = 0
-            
-            pos = 1 + pos
-        print("Juego terminado!!!\n")
-    
-        print("******** Resultado Final ********")
-        print(f'Aciertos --> {contA}\t\t\t|')
-        print(f'Fallos --> {contF}\t\t\t|')
-        print("*********************************")
-        
-        scoreMRAcertado = scoreMRAcertado + contA
-        scoreMRFallado = scoreMRFallado + contF
-        
-        input()
-        
-        os.system("CLS")
-        
-        menu()
+                    mistakes += 1
     else:
-        aleatorias()
-        
-def knowledge(res,comp,tab):
-    
-    global cono1
-    global cono2
-    global cono3
-    global cono4
-    global cono5
-    global cono6
-    global cono7
-    global cono8
-    global cono9
-    global cono10
-    
-    if res == comp:
-        if tab == 1:
-            cono1 += 10
-            if cono1 >= 100:
-                cono1 = 100
-        elif tab == 2:
-            cono2 += 10
-            if cono2 >= 100:
-                cono2 = 100
-        elif tab == 3:
-            cono3 += 10
-            if cono3 >= 100:
-                cono3 = 100
-        elif tab == 4 :
-            cono4 += 10
-            if cono4 >= 100:
-                cono4 = 100
-        elif tab == 5:
-            cono5 += 10
-            if cono5 >= 100:
-                cono5 = 100
-        elif tab == 6:
-            cono6 += 10
-            if cono6 >= 100:
-                cono6 = 100
-        elif tab == 7:
-            cono7 += 10
-            if cono7 >= 100:
-                cono7 = 100
-        elif tab == 8:
-            cono8 += 10
-            if cono8 >= 100:
-                cono8 = 100
-        elif tab == 9:
-            cono9 += 10
-            if cono9 >= 100:
-                cono9 = 100
-        elif tab == 10:
-            cono10 += 10
-            if cono10 >= 100:
-                cono10 = 100
-    elif res != comp:
-        if tab == 1:
-            cono1 -= 10
-            if cono1 <= 0:
-                cono1 = 0
-        elif tab == 2:
-            cono2 -= 10
-            if cono2 <= 0:
-                cono2 = 0
-        elif tab == 3:
-            cono3 -= 10
-            if cono3 <= 0:
-                cono3 = 0
-        elif tab == 4 :
-            cono4 -= 10
-            if cono4 <= 0:
-                cono4 = 0
-        elif tab == 5:
-            cono5 -= 10
-            if cono5 <= 0:
-                cono5 = 0
-        elif tab == 6:
-            cono6 -= 10
-            if cono6 <= 0:
-                cono6 = 0
-        elif tab == 7:
-            cono7 -= 10
-            if cono7 <= 0:
-                cono7 = 0
-        elif tab == 8:
-            cono8 -= 10
-            if cono8 <= 0:
-                cono8 = 0
-        elif tab == 9:
-            cono9 -= 10
-            if cono9 <= 0:
-                cono9 = 0
-        elif tab == 10:
-            cono10 -= 10
-            if cono10 <= 0:
-                cono10 = 0
-               
-def main():
-    menu()
 
-if __name__ == "__main__":
-	main()
+        for i in range(1, 11):
+            random_number1 = random.randint(1,10)
+            random_number2 = random.randint(1,10)
+            correct_result = random_number1 * random_number2
+            result = get_result(random_number1, random_number2)
+
+            if check_result(correct_result, result, random_number1):
+                corrects += 1
+            else:
+                mistakes += 1
+
+
+    global total_random_correct
+    global total_random_incorrect
+
+    total_random_correct += corrects
+    total_random_incorrect += mistakes
+
+    print_results(corrects, mistakes)
+
+def score():
+
+    os.system("CLS")
+
+    print("************PUNTUACION*************")
+    print(f"ALEATORIAS ACERTADAS: {total_random_correct}")
+    print(f"ALEATORIAS FALLADAS: {total_random_incorrect}")
+    print(f"NORMALES ACERTADAS: {total_regular_correct}")
+    print(f"NORMALES FALLADAS: {total_regular_incorrect}\n")
+    print("******CONOCIMIENTO POR TABLAS******")
+    for k, v in knowledge.items():
+        print(f"TABLA DEL {k}: {v} de 100")
+
+    print("\nPulsa Enter para volver...")
+    input()
+    os.system("CLS")
+
+def set_knowledge(correct, table):
+
+    table = str(table)
+
+    if correct:
+        knowledge[table] += 10
+        if knowledge[table] > 100:
+            knowledge[table] = 100
+    else:
+        knowledge[table] -= 10
+        if knowledge[table] < 0:
+            knowledge[table] = 0
+
+def get_tables():
+
+    os.system("CLS")
+
+    value = None
+    while value is None:
+        try:
+            value = input("¿Que tablas quieres multiplicar? Separalas por comas: ")
+        except ValueError:
+            value = None
+    tables = value.strip(",").split(',')
+    return tables
+
+def get_result(num1, num2):
+    result = None
+    while result is None:
+        try:
+            result = int(input(f"{num1} x {num2} = "))
+        except ValueError:
+            result = None
+    return result
+
+def check_result(correct_result, result, table):
+    if correct_result == result:
+        print("CORRECTO")
+        set_knowledge(True, table)
+        return True
+    else:
+        print(f"INCORRECTO, es {correct_result}")
+        set_knowledge(False, table)
+        return False
+
+def print_results(corrects, mistakes):
+    print("\n************FINAL************")
+    print(F"ACIERTOS: {corrects}")
+    print(F"FALLOS: {mistakes}\n")
+    print("Pulsa Enter para volver...")
+    input()
+    os.system("CLS")
+
+def main():
+    main_menu()
+
+if __name__ == '__main__':
+    main()
