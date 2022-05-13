@@ -6,6 +6,9 @@ total_regular_incorrect = 0
 total_random_correct = 0
 total_random_incorrect = 0
 
+corrects = 0
+mistakes = 0
+
 knowledge = {
     "1": 0,
     "2": 0,
@@ -23,36 +26,34 @@ def main_menu():
 
     os.system("CLS")
 
-    option = None
-    while option != 4 or option is None:
-        print("******************************** CALCULADORA ********************************")
-        print("1.- Multiplicar en orden")
-        print("2.- Multiplicar con numeros aleatorios")
-        print("3.- Score")
-        print("4.- Exit")
+    option = 0
 
+    print("******************************** CALCULADORA ********************************")
+    print("1.- Multiplicar en orden")
+    print("2.- Multiplicar con numeros aleatorios")
+    print("3.- Score")
+    print("4.- Exit")
 
-        try:
+    try:
             option = int(input("Introduce opcion: "))
-        except ValueError:
+    except ValueError:
             option = None
 
-        if option > 4 or option < 0:
-            os.system("CLS")
-            print("Opcion no valida")
-
-        if option == 1:
-            regular_multiplication()
-        elif option == 2:
-            random_multiplication()
-        elif option == 3:
-            score()
-        elif option == 4:
-            print("ADIOS")
+    if option == 1:
+            return 1
+    elif option == 2:
+            return 2
+    elif option == 3:
+            return 3
+    elif option == 4:
+            return 4
 
 def regular_multiplication():
 
     os.system("CLS")
+
+    global corrects
+    global mistakes
 
     corrects = 0
     mistakes = 0
@@ -73,25 +74,33 @@ def regular_multiplication():
     total_regular_correct += corrects
     total_regular_incorrect += mistakes
 
-    print_results(corrects, mistakes)
-
 def random_multiplication():
 
     os.system("CLS")
 
+    global corrects
+    global mistakes
+
     corrects = 0
     mistakes = 0
 
-    print("¿Quieres elegir las tablas que multiplicar?")
-    print("1.- No")
-    print("2.- Si")
+    random_tables = 0 #Variable que guarda la opcion elegida
 
-    random_tables = int(input("Opción: ")) - 1
-    if random_tables:
+    while (random_tables > 2 or random_tables < 1 or random_tables is None or random_tables=='' ):
+
+        os.system("CLS")
+
+        print("¿Quieres elegir las tablas que multiplicar?")
+        print("1.- No")
+        print("2.- Si")
+
+        random_tables = int(input("Opción: "))
+
+    if random_tables == 2:
         tables = get_tables()
         for table in tables:
             for i in range(1, 11):
-                random_number = random.randint(1,10)
+                random_number = random.randint(1, 10)
                 correct_result = int(table) * random_number
                 result = get_result(table, random_number)
 
@@ -99,11 +108,11 @@ def random_multiplication():
                     corrects += 1
                 else:
                     mistakes += 1
-    else:
+    elif random_tables == 1:
 
         for i in range(1, 11):
-            random_number1 = random.randint(1,10)
-            random_number2 = random.randint(1,10)
+            random_number1 = random.randint(1, 10)
+            random_number2 = random.randint(1, 10)
             correct_result = random_number1 * random_number2
             result = get_result(random_number1, random_number2)
 
@@ -112,14 +121,11 @@ def random_multiplication():
             else:
                 mistakes += 1
 
-
     global total_random_correct
     global total_random_incorrect
 
     total_random_correct += corrects
     total_random_incorrect += mistakes
-
-    print_results(corrects, mistakes)
 
 def score():
 
@@ -156,12 +162,13 @@ def get_tables():
     os.system("CLS")
 
     value = None
-    while value is None:
+    while value is None or value == '':
         try:
+            os.system("CLS")
             value = input("¿Que tablas quieres multiplicar? Separalas por comas: ")
         except ValueError:
             value = None
-    tables = value.strip(",").split(',')
+    tables = value.strip(",").strip().split(',')
     return tables
 
 def get_result(num1, num2):
@@ -192,7 +199,21 @@ def print_results(corrects, mistakes):
     os.system("CLS")
 
 def main():
-    main_menu()
+
+    op = None
+
+    while op != 4 or op is None:
+        op = main_menu()
+        if op == 1:
+            regular_multiplication()
+            print_results(corrects, mistakes)
+        elif op == 2:
+            random_multiplication()
+            print_results(corrects, mistakes)
+        elif op == 3:
+            score()
+        elif op == 4:
+            print("ADIOS")
 
 if __name__ == '__main__':
     main()
